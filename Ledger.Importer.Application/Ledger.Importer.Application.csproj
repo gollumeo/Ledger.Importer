@@ -2,6 +2,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Ledger.Importer.Domain\Ledger.Importer.Domain.csproj" />
+    <ProjectReference Include="..\Ledger.Importer.Infrastructure\Ledger.Importer.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mapster" Version="7.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Contracts\" />
+    <Folder Include="Queries\" />
   </ItemGroup>
 
   <PropertyGroup>

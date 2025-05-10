@@ -5,6 +5,16 @@
     <ProjectReference Include="..\Ledger.Importer.Domain\Ledger.Importer.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="csvHelper" Version="33.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Clients\" />
+    <Folder Include="Persistence\" />
+    <Folder Include="Security\" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
