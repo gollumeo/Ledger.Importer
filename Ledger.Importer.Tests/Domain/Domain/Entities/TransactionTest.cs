@@ -22,7 +22,7 @@ public class TransactionTest
     [Fact]
     public void ExceptionIsThrownWhenDescriptionIsEmpty()
     {
-        var transactionConstruction = () => new Transaction("", 29.90m, new TransactionDate(DateTime.UtcNow));
+        var transactionConstruction = () => new Transaction("   ", 29.90m, new TransactionDate(DateTime.UtcNow));
 
         transactionConstruction.Should().Throw<InvalidTransactionData>();
     }
