@@ -26,4 +26,24 @@ public class TransactionTest
 
         transactionConstruction.Should().Throw<InvalidTransactionData>();
     }
+    
+    [Fact]
+    public void ExceptionIsThrownWhenAmountIsZero()
+    {
+        var transactionConstruction = () => new Transaction("Uber Eats Paris", 0m, new TransactionDate(DateTime.UtcNow));
+        
+        transactionConstruction.Should().Throw<InvalidTransactionData>();
+    }
+    
+    [Fact]
+    public void TransactionIsCreatedWIthNegativeAmount()
+    {
+        var date = new TransactionDate(DateTime.UtcNow);
+        
+        var transaction = new Transaction("Uber Eats Paris", 29.90m, date);
+        
+        transaction.Description.Should().Be("Uber Eats Paris");
+        transaction.Amount.Should().Be(29.90m);
+        transaction.Date.Should().Be(date);
+    }
 }
