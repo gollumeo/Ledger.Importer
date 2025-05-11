@@ -40,10 +40,10 @@ public class TransactionTest
     {
         var date = new TransactionDate(DateTime.UtcNow);
         
-        var transaction = new Transaction("Uber Eats Paris", 29.90m, date);
+        var transaction = new Transaction("Uber Eats Paris", -29.90m, date);
         
         transaction.Description.Should().Be("Uber Eats Paris");
-        transaction.Amount.Should().Be(29.90m);
+        transaction.Amount.Should().Be(-29.90m);
         transaction.Date.Should().Be(date);
     }
 }
