@@ -10,9 +10,7 @@ public class InterpretCsvAsTransactionTest
     [Fact]
     public void EmptyCsvReturnsEmptyTransactionList()
     {
-        var csvInterpret = new InterpretCsvAsTransactions();
-        
-        var transactions = csvInterpret.From(new MemoryStream());
+        var transactions = InterpretCsvAsTransactions.From(new MemoryStream());
 
         transactions.Should().BeEmpty();
     }
@@ -20,13 +18,11 @@ public class InterpretCsvAsTransactionTest
     [Fact]
     public void CsvWithOnlyHeadersReturnsEmptyTransactionList()
     {
-        var csv = "description,amount,date";
+        const string csv = "description,amount,date";
         
         var csvStream = CreateCsvStream(csv);
         
-        var csvInterpret = new InterpretCsvAsTransactions();
-        
-        var transactions = csvInterpret.From(csvStream);
+        var transactions = InterpretCsvAsTransactions.From(csvStream);
         
         transactions.Should().BeEmpty();
     }
@@ -34,13 +30,11 @@ public class InterpretCsvAsTransactionTest
     [Fact]
     public void CsvWithSingleValidLineReturnsAProperlyFormattedTransaction()
     {
-        var csv = "description,amount,date\nUber Eats Paris,29.90,2025-05-08T12:45:00Z";
+        const string csv = "description,amount,date\nUber Eats Paris,29.90,2025-05-08T12:45:00Z";
 
         var csvStream = CreateCsvStream(csv);
         
-        var csvInterpret = new InterpretCsvAsTransactions();
-        
-        var transactionList = csvInterpret.From(csvStream);
+        var transactionList = InterpretCsvAsTransactions.From(csvStream);
 
         var transactions = transactionList.ToList();
         transactions.Should().HaveCount(1);
@@ -54,9 +48,11 @@ public class InterpretCsvAsTransactionTest
     [Fact]
     public void CsvWithSingleValidLineAndIncorrectLineReturnsAProperlyFormattedTransaction()
     {
-        var csvInterpret = new InterpretCsvAsTransactions();
+        const string csv = "description,amount,date\nUber Eats Paris,29.90,2025-05-08T12:45:00Z\nUber,,";
         
-        var transactions = csvInterpret.From(new MemoryStream());
+        var csvStream = CreateCsvStream(csv);
+        
+        var transactions = InterpretCsvAsTransactions.From(csvStream);
         
         transactions.Count().Should().Be(1);
     }
@@ -64,13 +60,11 @@ public class InterpretCsvAsTransactionTest
     [Fact]
     public void CsvWithInvalidHeadersThrows()
     {
-        var csv = "description,amount,date\nUber Eats Paris,29.90,2025-05-08T12:45:00Z";
+        const string csv = "description,amount,date\nUber Eats Paris,29.90,2025-05-08T12:45:00Z";
 
         var csvStream = CreateCsvStream(csv);
         
-        var csvInterpret = new InterpretCsvAsTransactions();
-        
-        var csvParsingAction = () => csvInterpret.From(csvStream);
+        var csvParsingAction = () => InterpretCsvAsTransactions.From(csvStream);
 
         csvParsingAction.Should().Throw<InvalidCsvFormat>();
     }
