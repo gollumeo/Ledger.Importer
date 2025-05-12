@@ -9,62 +9,68 @@ public sealed class InterpretCsvAsTransactions
 {
     public static IEnumerable<Transaction> From(Stream csvStream)
     {
-        var transactions = new List<Transaction>();
-
         using var reader = new StreamReader(csvStream);
         var headerLine = reader.ReadLine();
 
-        if (string.IsNullOrWhiteSpace(headerLine))
-        {
-            return transactions;
-        }
+        if (!IsValidHeader(headerLine)) throw new InvalidCsvFormat("Invalid CSV headers.");
 
-        var header = headerLine.Split(',');
-
-        if (header.Length != 3 ||
-            header[0].Trim() != "description" ||
-            header[1].Trim() != "amount" ||
-            header[2].Trim() != "date")
-        {
-            throw new InvalidCsvFormat("Invalid CSV headers.");
-        }
+        var transactions = new List<Transaction>();
 
         while (!reader.EndOfStream)
         {
             var dataLine = reader.ReadLine();
-            if (string.IsNullOrWhiteSpace(dataLine))
-                continue;
-
-            var parts = dataLine.Split(',');
-            if (parts.Length != 3)
-                continue;
-
-            var description = parts[0].Trim();
-            var amountString = parts[1].Trim();
-            var dateString = parts[2].Trim();
-
-            if (string.IsNullOrWhiteSpace(description) ||
-                string.IsNullOrWhiteSpace(amountString) ||
-                string.IsNullOrWhiteSpace(dateString))
-                continue;
-
-            if (!decimal.TryParse(amountString, NumberStyles.Number, CultureInfo.InvariantCulture, out var amount))
-                continue;
-
-            TransactionDate date;
-
-            try
+            
+            if (dataLine != null && TryParseLine(dataLine, out var transaction))
             {
-                date = TransactionDate.From(dateString);
+                transactions.Add(transaction);
             }
-            catch
-            {
-                continue;
-            }
-
-            transactions.Add(new Transaction(description, amount, date));
         }
 
         return transactions;
+    }
+    
+    private static bool IsValidHeader(string? headerLine)
+    {
+        if (string.IsNullOrWhiteSpace(headerLine)) return false;
+
+        
+        var header = headerLine.Split(',');
+        
+        if (headerLine.Length != 3) return false;
+        
+        return header[0] == "description" 
+               && header[1] == "amount" 
+               && header[2] == "date";
+    }
+    
+    private static bool TryParseLine(string dataLine, out Transaction transaction)
+    {
+        transaction = null!;
+        
+        if (string.IsNullOrWhiteSpace(dataLine)) return false;
+        
+        var parts = dataLine.Split(',');
+        if (parts.Length != 3) return false;
+        
+        var description = parts[0].Trim();
+        var amountString = parts[1].Trim();
+        var dateString = parts[2].Trim();
+        
+        if (string.IsNullOrWhiteSpace(description) || string.IsNullOrWhiteSpace(amountString) || string.IsNullOrWhiteSpace(dateString))
+            return false;
+        
+        if (!decimal.TryParse(amountString, NumberStyles.Number, CultureInfo.InvariantCulture, out var amount))
+            return false;
+        
+        try
+        {
+            var date = TransactionDate.From(dateString);
+            transaction = new Transaction(description, amount, date);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }
