@@ -10,7 +10,10 @@ public class InterpretCsvAsTransactionTest
     [Fact]
     public void EmptyCsvReturnsEmptyTransactionList()
     {
-        var transactions = InterpretCsvAsTransactions.From(new MemoryStream());
+        const string csv = "description,amount,date";
+        var csvStream = CreateCsvStream(csv);
+        
+        var transactions = InterpretCsvAsTransactions.From(csvStream);
 
         transactions.Should().BeEmpty();
     }
@@ -42,25 +45,27 @@ public class InterpretCsvAsTransactionTest
         var transaction = transactions.First();
         transaction.Description.Should().Be("Uber Eats Paris");
         transaction.Amount.Should().Be(29.90m);
-        transaction.Date.Should().Be(DateTime.Parse("2025-05-08T12:45:00Z"));
+        var expectedDate = DateTime.SpecifyKind(
+            DateTime.Parse("2025-05-08T12:45:00"), DateTimeKind.Utc);
+
+        transaction.Date.Value.Should().Be(expectedDate);
     }
     
     [Fact]
     public void CsvWithSingleValidLineAndIncorrectLineReturnsAProperlyFormattedTransaction()
     {
-        const string csv = "description,amount,date\nUber Eats Paris,29.90,2025-05-08T12:45:00Z\nUber,,";
+        const string csv = "description,amount,date\nUber Eats Paris,29.90,2025-05-08T12:45:00Z\nUber,";
         
         var csvStream = CreateCsvStream(csv);
         
-        var transactions = InterpretCsvAsTransactions.From(csvStream);
-        
-        transactions.Count().Should().Be(1);
+        var transactions = InterpretCsvAsTransactions.From(csvStream).ToList();
+        transactions.Should().HaveCount(1);        
     }
     
     [Fact]
     public void CsvWithInvalidHeadersThrows()
     {
-        const string csv = "description,amount,date\nUber Eats Paris,29.90,2025-05-08T12:45:00Z";
+        const string csv = "desc,amount,date";
 
         var csvStream = CreateCsvStream(csv);
         
