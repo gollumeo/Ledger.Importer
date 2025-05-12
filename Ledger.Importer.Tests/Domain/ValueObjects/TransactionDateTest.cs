@@ -12,7 +12,7 @@ public class TransactionDateTest
         var now = DateTime.UtcNow;
         var transactionDate = new TransactionDate(now);
         
-        transactionDate.Date.Should().Be(now);
+        transactionDate.Value.Should().Be(now);
     }
     
     [Fact]

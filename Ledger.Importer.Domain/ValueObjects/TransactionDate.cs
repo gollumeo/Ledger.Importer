@@ -5,11 +5,11 @@ namespace Ledger.Importer.Domain.ValueObjects;
 
 public readonly struct TransactionDate
 {
-    public DateTime Date { get; }
+    public DateTime Value { get; }
 
-    public TransactionDate(DateTime date)
+    public TransactionDate(DateTime value)
     {
-        Date = date;
+        Value = value;
     }
 
     public static TransactionDate From(string isoDate)
@@ -19,7 +19,7 @@ public readonly struct TransactionDate
             throw new InvalidTransactionData("Date cannot be empty.");
         }
         
-        if (!DateTime.TryParse(isoDate, null, DateTimeStyles.RoundtripKind, out var parsed))
+        if (!DateTime.TryParse(isoDate, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var parsed))
         {
             throw new InvalidTransactionData($"Invalid date format: {isoDate}.");
         } 
@@ -27,8 +27,8 @@ public readonly struct TransactionDate
         return new TransactionDate(parsed);
     }
     
-    public override string ToString() => Date.ToString("O");
+    public override string ToString() => Value.ToString("O");
 
-    public static implicit operator DateTime(TransactionDate date) => date.Date;
+    public static implicit operator DateTime(TransactionDate date) => date.Value;
     public static implicit operator TransactionDate(DateTime date) => new(date);
 }
