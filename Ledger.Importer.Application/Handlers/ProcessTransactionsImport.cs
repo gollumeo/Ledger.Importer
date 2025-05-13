@@ -7,7 +7,7 @@ namespace Ledger.Importer.Application.Handlers;
 public class ProcessTransactionsImport
 {
    public static IEnumerable<Transaction> Execute(ImportTransactions command)
-    {
-        return InterpretCsvAsTransactions.From(command.Csv);
-    }
+   {
+       return command.Csv.Length == 0 ? [] : InterpretCsvAsTransactions.From(command.Csv);
+   }
 }
