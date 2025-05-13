@@ -28,7 +28,7 @@ public class TransactionDateTest
     {
         var date = TransactionDate.From("2025-05-10");
         
-        date.Should().Be(new TransactionDate(new DateTime(2025, 05, 10, 12, 45, 00)));
+        date.Should().Be(new TransactionDate(new DateTime(2025, 05, 10)));
     }
     
     [Fact]

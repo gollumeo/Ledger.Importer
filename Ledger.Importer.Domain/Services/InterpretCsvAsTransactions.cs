@@ -11,6 +11,8 @@ public sealed class InterpretCsvAsTransactions
     {
         using var reader = new StreamReader(csvStream);
         var headerLine = reader.ReadLine();
+        
+        Console.WriteLine(headerLine);
 
         if (!IsValidHeader(headerLine)) throw new InvalidCsvFormat("Invalid CSV headers.");
 
@@ -36,7 +38,7 @@ public sealed class InterpretCsvAsTransactions
         
         var header = headerLine.Split(',');
         
-        if (headerLine.Length != 3) return false;
+        if (header.Length != 3) return false;
         
         return header[0] == "description" 
                && header[1] == "amount" 
