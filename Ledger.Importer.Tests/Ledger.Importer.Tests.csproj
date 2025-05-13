@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.2" />
     <PackageReference Include="FluentAssertions" Version="8.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.0">
@@ -23,10 +24,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Ledger.Importer.Api\Ledger.Importer.Api.csproj" />
     <ProjectReference Include="..\Ledger.Importer.Application\Ledger.Importer.Application.csproj" />
     <ProjectReference Include="..\Ledger.Importer.Domain\Ledger.Importer.Domain.csproj" />
     <ProjectReference Include="..\Ledger.Importer.Infrastructure\Ledger.Importer.Infrastructure.csproj" />
     <ProjectReference Include="..\Ledger.Importer.Presentation\Ledger.Importer.Presentation.csproj" />
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <None Include="../storage/sample-transactions.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
