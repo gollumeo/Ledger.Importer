@@ -12,7 +12,7 @@ public class TransactionImportIntegrationTest(WebApplicationFactory<Program> fac
     private readonly HttpClient _client = factory.CreateClient();
 
     [Fact]
-    public async Task Import_WithRealCsvFile_Works()
+    public async Task ImportWithRealCsvFileWorks()
     {
         var csvPath = Path.Combine(AppContext.BaseDirectory, "sample-transactions.csv");
 
