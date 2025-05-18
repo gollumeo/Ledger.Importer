@@ -4,7 +4,7 @@ using Ledger.Importer.Domain.Services;
 
 namespace Ledger.Importer.Application.Handlers;
 
-public class ProcessTransactionsImport
+public abstract class ProcessTransactionsImport
 {
    public static IEnumerable<Transaction> Execute(ImportTransactions command)
    {
