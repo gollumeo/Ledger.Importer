@@ -5,15 +5,13 @@ using Ledger.Importer.Domain.ValueObjects;
 
 namespace Ledger.Importer.Domain.Services;
 
-public sealed class InterpretCsvAsTransactions
+public static class InterpretCsvAsTransactions
 {
     public static IEnumerable<Transaction> From(Stream csvStream)
     {
         using var reader = new StreamReader(csvStream);
         var headerLine = reader.ReadLine();
         
-        Console.WriteLine(headerLine);
-
         if (!IsValidHeader(headerLine)) throw new InvalidCsvFormat("Invalid CSV headers.");
 
         var transactions = new List<Transaction>();
