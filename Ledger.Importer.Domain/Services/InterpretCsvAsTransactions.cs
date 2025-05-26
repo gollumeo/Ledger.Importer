@@ -11,15 +11,16 @@ public static class InterpretCsvAsTransactions
     {
         using var reader = new StreamReader(csvStream);
         var headerLine = reader.ReadLine();
-        
-        if (!IsValidHeader(headerLine)) throw new InvalidCsvFormat("Invalid CSV headers.");
+
+        if (!CsvHeaderValidation.IsStandardTransactionHeader(headerLine))
+            throw new InvalidCsvFormat("Invalid CSV headers.");
 
         var transactions = new List<Transaction>();
 
         while (!reader.EndOfStream)
         {
             var dataLine = reader.ReadLine();
-            
+
             if (dataLine != null && TryParseLine(dataLine, out var transaction))
             {
                 transactions.Add(transaction);
@@ -28,40 +29,27 @@ public static class InterpretCsvAsTransactions
 
         return transactions;
     }
-    
-    private static bool IsValidHeader(string? headerLine)
-    {
-        if (string.IsNullOrWhiteSpace(headerLine)) return false;
 
-        
-        var header = headerLine.Split(',');
-        
-        if (header.Length != 3) return false;
-        
-        return header[0] == "description" 
-               && header[1] == "amount" 
-               && header[2] == "date";
-    }
-    
     public static bool TryParseLine(string dataLine, out Transaction transaction)
     {
         transaction = null!;
-        
+
         if (string.IsNullOrWhiteSpace(dataLine)) return false;
-        
+
         var parts = dataLine.Split(',');
         if (parts.Length != 3) return false;
-        
+
         var description = parts[0].Trim();
         var amountString = parts[1].Trim();
         var dateString = parts[2].Trim();
-        
-        if (string.IsNullOrWhiteSpace(description) || string.IsNullOrWhiteSpace(amountString) || string.IsNullOrWhiteSpace(dateString))
+
+        if (string.IsNullOrWhiteSpace(description) || string.IsNullOrWhiteSpace(amountString) ||
+            string.IsNullOrWhiteSpace(dateString))
             return false;
-        
+
         if (!decimal.TryParse(amountString, NumberStyles.Number, CultureInfo.InvariantCulture, out var amount))
             return false;
-        
+
         try
         {
             var date = TransactionDate.From(dateString);
