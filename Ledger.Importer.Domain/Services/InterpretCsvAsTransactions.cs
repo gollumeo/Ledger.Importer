@@ -43,7 +43,7 @@ public static class InterpretCsvAsTransactions
                && header[2] == "date";
     }
     
-    private static bool TryParseLine(string dataLine, out Transaction transaction)
+    public static bool TryParseLine(string dataLine, out Transaction transaction)
     {
         transaction = null!;
         
