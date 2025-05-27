@@ -32,4 +32,25 @@ public class StreamedTransactionImportTest
         output.Should().Contain("2025-05-27");
         output.Should().EndWith("\n\n");
     }
+    
+    [Fact]
+    public async Task WritesTransactionFailedEventToHttpResponse()
+    {
+        var body = new MemoryStream();
+        var response = new DefaultHttpContext().Response;
+        response.Body = body;
+
+        var narrator = new StreamedTransactionImport(response);
+
+        await narrator.NotifyTransactionFailed(3, "Amount missing");
+        
+        body.Position = 0;
+        using var reader = new StreamReader(body);
+        var output = await reader.ReadToEndAsync();
+        
+        output.Should().Contain("event: TransactionFailed");
+        output.Should().Contain("3"); // line number
+        output.Should().Contain("Amount missing");
+        output.Should().EndWith("\n\n");
+    }
 }
