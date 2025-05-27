@@ -34,8 +34,16 @@ public class StreamedTransactionImport(HttpResponse response) : INarrateTransact
         await response.Body.FlushAsync();
     }
 
-    public Task NotifyImportCompleted(int total, int failed)
+    public async Task NotifyImportCompleted(int total, int failed)
     {
-        throw new NotImplementedException();
+        var json = JsonSerializer.Serialize(new
+        {
+            total,
+            failed,
+        });
+        
+        await response.WriteAsync("event: ImportCompleted\n");
+        await response.WriteAsync($"data: {json}\n\n");
+        await response.Body.FlushAsync();
     }
 }
