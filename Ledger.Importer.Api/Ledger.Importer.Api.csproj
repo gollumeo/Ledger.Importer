@@ -19,4 +19,26 @@
     <ProjectReference Include="..\Ledger.Importer.Presentation\Ledger.Importer.Presentation.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="storage\sample-transactions.csv">
+      <Link>storage\sample-transactions.csv</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\storage\sample-transactions.csv">
+      <Link>storage\sample-transactions.csv</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="CopyStorageCsv" AfterTargets="Build">
+    <ItemGroup>
+      <StorageFiles Include="..\storage\sample-transactions.csv" />
+    </ItemGroup>
+
+    <Copy
+            SourceFiles="@(StorageFiles)"
+            DestinationFolder="$(MSBuildProjectDirectory)\storage"
+            SkipUnchangedFiles="true" />
+  </Target>
+
 </Project>
