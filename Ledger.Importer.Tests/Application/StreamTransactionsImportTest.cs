@@ -9,7 +9,7 @@ namespace Ledger.Importer.Tests.Application;
 public class StreamTransactionsImportTest
 {
     [Fact]
-    public async Task ShouldNotifyNarratorForEachValidTransaction()
+    public async Task NotifiesNarratorForEachValidTransaction()
     {
         const string csv = """
                            description,amount,date
