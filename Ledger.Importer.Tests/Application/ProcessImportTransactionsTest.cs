@@ -18,7 +18,7 @@ public class ProcessImportTransactionsTest
         
         var transactions = ProcessTransactionsImport.Execute(command);
         
-        transactions.Should().HaveCount(1);
+        transactions.Count.Should().Be(1);
     }
     
     [Fact]
@@ -30,7 +30,7 @@ public class ProcessImportTransactionsTest
         
         var transactions = ProcessTransactionsImport.Execute(command);
 
-        transactions.Should().BeEmpty();
+        transactions.Count.Should().Be(0);
     }
     
     [Fact]
