@@ -46,4 +46,24 @@ public class StreamTransactionsImportTest
 
         action.Should().ThrowAsync<InvalidCsvFormat>();
     }
+    
+    [Fact]
+    public async Task NotifiesFailedTransactionWhenLineIsInvalid()
+    {
+        const string csv = """
+                           description,amount,date
+                           Uber Eats Paris,29.90,2025-05-13
+                           Uber Mons,,2025-05-13
+                           """;
+        
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(csv));
+        var command = new ImportTransactions(stream);
+        var narrator = new FakeNarrateTransactionsImportLive();
+        
+        await StreamTransactionsImport.ExecuteAsync(command, narrator);
+
+        narrator.Imported.Should().HaveCount(1);
+        narrator.Failed.Should().ContainSingle(failed => failed.Line == 2);
+        narrator.Completed.Should().Be((2, 1));
+    }
 }
