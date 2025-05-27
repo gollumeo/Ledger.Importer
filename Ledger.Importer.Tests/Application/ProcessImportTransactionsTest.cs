@@ -3,7 +3,6 @@ using FluentAssertions;
 using Ledger.Importer.Application.Commands;
 using Ledger.Importer.Application.Handlers;
 using Ledger.Importer.Domain.Exceptions;
-using Xunit.Abstractions;
 
 namespace Ledger.Importer.Tests.Application;
 
