@@ -1,82 +1,69 @@
 ﻿# Ledger.Importer
 
-**Transaction ingestion and validation engine for FinTech applications.**
-Parses raw CSV files into valid transaction entries using strict validation rules and Clean Architecture principles.
+**Transaction ingestion & streaming for FinTech backends.**
+Parses CSV files into typed transaction entries using Clean Architecture, CQRS, and test-first principles.
 
 ---
 
-## 🚀 Use Case
+## ✨ Use Cases
 
-Given a CSV file containing raw financial transactions, this module parses, validates, and stores them in memory for further analysis or categorization.
+Ledger.Importer exposes **two distinct ingestion flows**:
+
+| Flow     | Method                             | Description                                        |
+| -------- | ---------------------------------- | -------------------------------------------------- |
+| Sync     | `POST /transactions/import`        | Upload a CSV file, get parsed transactions as JSON |
+| Streamed | `GET  /transactions/import/stream` | Streams import events (SSE) line by line           |
+
+Both rely on a shared validation pipeline and domain encapsulation.
 
 ---
 
-## 🔍 Example
-
-**CSV Input**
+## 🗕 Example Input
 
 ```csv
 description,amount,date
 Uber Eats Paris,29.90,2025-05-08T12:45:00Z
-Wirecard Transfer,-1050.00,2025-05-07T08:30:00Z
-Deliveroo,18.40,2025-05-06T19:00:00Z
-```
-
-**Parsed Output**
-
-```json
-[
-  {
-    "description": "Uber Eats Paris",
-    "amount": 29.90,
-    "date": "2025-05-08T12:45:00Z"
-  },
-  {
-    "description": "Wirecard Transfer",
-    "amount": -1050.00,
-    "date": "2025-05-07T08:30:00Z"
-  },
-  {
-    "description": "Deliveroo",
-    "amount": 18.40,
-    "date": "2025-05-06T19:00:00Z"
-  }
-]
+Deliveroo Bruxelles,18.40,2025-05-10T19:00:00Z
+Uber Airport,45.00,2025-05-11T09:30:00Z
 ```
 
 ---
 
-## 🧠 Business Rules
+## ✅ Business Rules
 
-* CSV file **must have** `description`, `amount`, `date` headers
-* `amount` must be a **valid decimal number**
-* `date` must be a **valid ISO 8601 date**
-* Invalid lines are **skipped or logged** depending on config
-* No persistence layer: transactions are stored **in-memory only**
-
-> All validation logic is encapsulated in the domain and fully testable.
+* CSV **must include headers**: `description`, `amount`, `date`
+* `amount` must be a **valid decimal**
+* `date` must be a **valid ISO 8601** timestamp
+* Invalid lines are **skipped or narrated as failures**
+* Transactions are parsed and held **in-memory only**
+* All validation is encapsulated in the **domain layer**
 
 ---
 
-## 🛡 Architecture
+## 🧱 Architecture
 
-This module follows **Clean Architecture** and **CQRS**, exposing a dedicated ingestion endpoint.
+> Clean Archi stricte + CQRS + Narration SSE
 
 ```
 Ledger.Importer/
-├── Api/            # ASP.NET Core API (not Minimal API)
-├── Application/    # Use cases, commands, handlers
-├── Domain/         # Entities, Validators, ValueObjects
-├── Infrastructure/ # CSV Reader, Parser, Storage (in-memory)
-└── Tests/          # xUnit test suite
+├── Api/              # ASP.NET Core API (not Minimal)
+├── Application/      # Commands, Use Cases, Narrators, ReadModels
+├── Domain/           # Entities, Value Objects, Validators
+├── Infrastructure/   # Future storage strategies (not yet used)
+├── Presentation/     # Controllers, Presenters, HTTP Narrators
+└── Tests/            # Full unit + integration suite (xUnit)
 ```
 
 ---
 
-## ✅ Test Coverage
+## 🧪 Test Coverage
 
-Unit tested with [xUnit](https://xunit.net/).
-Run all tests:
+Full coverage via [xUnit](https://xunit.net/) with:
+
+* ✅ Domain parsing & validation
+* ✅ Application orchestration (CQRS)
+* ✅ Narration through `INarrateTransactionsImportLive`
+* ✅ End-to-end integration (including file upload and streaming)
 
 ```bash
 dotnet test
@@ -84,36 +71,73 @@ dotnet test
 
 ---
 
-## 🛠 How to Run
-
-1. Clone the repo
-2. Navigate to `Api/` and run the API:
+## 💥 How to Run
 
 ```bash
-dotnet run --project Api
+dotnet run --project Ledger.Importer.Api
 ```
 
-3. Send a `multipart/form-data` request to:
+Then:
 
-```
+#### 🔁 Sync Import
+
+```http
 POST /transactions/import
+Content-Type: multipart/form-data
+Field: file=sample.csv
 ```
 
-With a `file` field containing your CSV.
+#### 🌊 Streamed Import (SSE)
+
+```http
+GET /transactions/import/stream
+```
+
+> Must have `storage/sample-transactions.csv` present at runtime
 
 ---
 
-## 🛣 Roadmap
+## 📦 Output Contracts
 
-* [ ] In-memory CSV parsing and validation
-* [ ] Line-by-line error reporting (configurable)
-* [ ] Support for CSV delimiters and encodings
-* [ ] Pluggable storage strategy (in-memory, file, or DB)
-* [ ] Bulk import job runner (CLI or background service)
-* [ ] CSV format autodetection (future)
+### ✅ Sync Response
+
+```json
+{
+  "count": 3,
+  "items": [
+    {
+      "description": "Uber Eats Paris",
+      "amount": 29.9,
+      "date": "2025-05-08T12:45:00Z"
+    },
+    ...
+  ]
+}
+```
+
+### 🌊 SSE Stream
+
+```
+event: TransactionImported
+data: { "description": "...", ... }
+
+event: TransactionFailed
+data: { "line": 6, "reason": "Invalid or unparseable line." }
+
+event: ImportCompleted
+data: { "total": 6, "failed": 1 }
+```
 
 ---
 
-## © License
+## 🚣 Roadmap
 
-MIT — Free to use, modify, and distribute.
+* [x] Line-by-line validation
+* [x] In-memory import flow
+* [x] Narration via SSE (Server-Sent Events)
+
+---
+
+## 📜 License
+
+MIT — Use freely, no warranty.
