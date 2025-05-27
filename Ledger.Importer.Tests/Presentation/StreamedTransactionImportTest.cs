@@ -53,4 +53,26 @@ public class StreamedTransactionImportTest
         output.Should().Contain("Amount missing");
         output.Should().EndWith("\n\n");
     }
+    
+    [Fact]
+    public async Task WritesImportCompletedEventToHttpResponse()
+    {
+        var body = new MemoryStream();
+        var response = new DefaultHttpContext().Response;
+        response.Body = body;
+        
+        var narrator = new StreamedTransactionImport(response);
+
+        await narrator.NotifyImportCompleted(3, 1);
+
+        body.Position = 0;
+        
+        using var reader = new StreamReader(body);
+        var output = await reader.ReadToEndAsync();
+        
+        output.Should().Contain("event: ImportCompleted");
+        output.Should().Contain("3"); // total
+        output.Should().Contain("1"); // failed
+        output.Should().EndWith("\n\n");
+    }
 }
