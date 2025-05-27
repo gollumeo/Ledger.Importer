@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
+using Ledger.Importer.Application.ReadModels;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Ledger.Importer.Tests.Integration;
@@ -14,7 +15,7 @@ public class TransactionImportIntegrationTest(WebApplicationFactory<Program> fac
     [Fact]
     public async Task ImportWithRealCsvFileWorks()
     {
-        var csvPath = Path.Combine(AppContext.BaseDirectory, "sample-transactions.csv");
+        var csvPath = Path.Combine(AppContext.BaseDirectory, "storage", "sample-transactions.csv");
 
         var bytes = await File.ReadAllBytesAsync(csvPath);
         var content = new MultipartFormDataContent
@@ -33,8 +34,7 @@ public class TransactionImportIntegrationTest(WebApplicationFactory<Program> fac
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var result = await response.Content.ReadFromJsonAsync<List<dynamic>>();
-        
+        var result = await response.Content.ReadFromJsonAsync<ImportedTransactions>();
         result!.Count.Should().Be(5);
     }
 }
