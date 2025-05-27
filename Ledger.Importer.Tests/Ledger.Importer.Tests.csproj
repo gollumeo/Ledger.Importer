@@ -30,10 +30,11 @@
     <ProjectReference Include="..\Ledger.Importer.Infrastructure\Ledger.Importer.Infrastructure.csproj" />
     <ProjectReference Include="..\Ledger.Importer.Presentation\Ledger.Importer.Presentation.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Include="../storage/sample-transactions.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
 </Project>
