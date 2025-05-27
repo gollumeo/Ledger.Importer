@@ -2,6 +2,7 @@
 using Ledger.Importer.Application.Contracts;
 using Ledger.Importer.Domain.Exceptions;
 using Ledger.Importer.Domain.Services;
+using Ledger.Importer.Domain.Validation;
 
 namespace Ledger.Importer.Application.Handlers;
 

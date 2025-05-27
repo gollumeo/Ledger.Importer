@@ -1,4 +1,4 @@
-﻿namespace Ledger.Importer.Domain.Services;
+﻿namespace Ledger.Importer.Domain.Validation;
 
 public static class CsvHeaderValidation
 {
